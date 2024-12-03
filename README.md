@@ -67,8 +67,7 @@ TamamoHub Commander - це потужний інструмент для відд
 
 ## 🤝 Підтримка
 
-- 📝 [Документація](https://github.com/TamamoHub/TamamoHub-Commander/wiki)
-- 🐛 [Повідомити про помилку](https://github.com/TamamoHub/TamamoHub-Commander/issues)
+- 🐛 [Повідомити про помилку](https://t.me/TamamoHub_Commander_help_bot)
 - 💬 [Telegram бот підтримки](https://t.me/TamamoHub_Commander_help_bot)
 
 ## 📜 Ліцензія
