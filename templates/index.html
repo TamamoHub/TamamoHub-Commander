@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TamamoHub Commander</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'custom-gray': {
+                            100: '#f5f5f5',
+                            200: '#e5e5e5',
+                            300: '#d4d4d4',
+                            400: '#a3a3a3',
+                            500: '#737373',
+                            600: '#525252',
+                            700: '#404040',
+                            800: '#262626',
+                            900: '#171717',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        
+        .main-container {
+            height: 600px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 1rem;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .settings-container {
+            flex: 1;
+            min-height: 0;
+        }
+
+        .content-section {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .control-button {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        /* Стилізація скролбару */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Анімація для GitHub посилання */
+        .github-link {
+            transition: all 0.3s ease;
+        }
+
+        .github-link:hover {
+            transform: translateY(-2px);
+        }
+
+        .github-link:hover svg {
+            transform: rotate(360deg);
+            transition: transform 0.6s ease;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-custom-gray-800 to-custom-gray-900 text-white p-4">
+    <div class="main-container">
+        <!-- Ліва частина (основний контент) -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="glass-effect p-4 rounded-xl">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <!-- Закоментуйте або видаліть рядок з логотипом -->
+                        <!-- <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="w-10 h-10 mr-3 rounded-xl"> -->
+                        <h1 class="text-xl font-bold">TamamoHub Commander</h1>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button class="px-4 py-2 rounded-lg bg-custom-gray-700 hover:bg-custom-gray-600 transition-colors" onclick="showSettings()">Налаштування</button>
+                        <button class="px-4 py-2 rounded-lg bg-custom-gray-700 hover:bg-custom-gray-600 transition-colors" onclick="showConsole()">Консоль</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="settings-container">
+                <!-- Settings Section -->
+                <section id="settings" class="glass-effect p-5 rounded-xl content-section">
+                    <h2 class="text-lg font-bold mb-4">Налаштування</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block mb-2 text-sm">Токен Telegram бота</label>
+                            <input type="text" class="w-full p-2 rounded-lg bg-custom-gray-700 border border-custom-gray-600 focus:outline-none focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block mb-2 text-sm">Виберіть ШІ модель</label>
+                            <select class="w-full p-2 rounded-lg bg-custom-gray-700 border border-custom-gray-600 focus:outline-none focus:border-blue-500">
+                                <option value="gemini">Gemini</option>
+                                <option value="mistral">Mistral</option>
+                                <option value="openai">OpenAI</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block mb-2 text-sm">Токен ШІ</label>
+                            <input type="text" class="w-full p-2 rounded-lg bg-custom-gray-700 border border-custom-gray-600 focus:outline-none focus:border-blue-500">
+                        </div>
+
+                        <div class="flex space-x-3 pt-2">
+                            <button class="flex-1 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors">Зберегти</button>
+                            <button class="flex-1 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition-colors">Скинути</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Console Section -->
+                <section id="console" class="glass-effect p-5 rounded-xl content-section hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold">Консоль</h2>
+                        <button onclick="clearConsole()" class="px-3 py-1 text-sm rounded-lg bg-custom-gray-700 hover:bg-custom-gray-600 transition-colors">
+                            Очистити
+                        </button>
+                    </div>
+                    <div id="consoleOutput" class="bg-custom-gray-900 p-4 rounded-lg h-[calc(100%-4rem)] overflow-y-auto font-mono text-sm whitespace-pre">
+                        <!-- Console output will be here -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- Footer -->
+            <div class="glass-effect p-3 rounded-xl">
+                <div class="flex items-center justify-between text-sm text-gray-400">
+                    <div class="flex items-center space-x-2">
+                        <span>© 2024 TamamoHub (Pelykh Ihor)</span>
+                    </div>
+                    <a href="https://github.com/TamamoHub/TamamoHub-Commander" 
+                       target="_blank" 
+                       onclick="event.preventDefault(); window.location.href=this.href;"
+                       class="github-link flex items-center space-x-2 hover:text-white transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>GitHub</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Права частина (панель керування) -->
+        <div class="side-panel">
+            <!-- Bot Controls -->
+            <div class="glass-effect p-4 rounded-xl">
+                <h2 class="text-lg font-bold mb-4">Керування ботом</h2>
+                <div class="space-y-3">
+                    <button id="startBot" class="control-button bg-green-600 hover:bg-green-700">
+                        Запустити бота
+                    </button>
+                    <button id="stopBot" class="control-button bg-red-600 hover:bg-red-700" disabled>
+                        Зупинити бота
+                    </button>
+                </div>
+            </div>
+
+            <!-- Additional Controls -->
+            <div class="glass-effect p-4 rounded-xl">
+                <h2 class="text-lg font-bold mb-4">Додаткові функції</h2>
+                <div class="space-y-3">
+                    <button onclick="checkUpdates()" class="control-button bg-blue-600 hover:bg-blue-700">
+                        Оновити бота
+                    </button>
+                    <button onclick="showAISettings()" class="control-button bg-purple-600 hover:bg-purple-700">
+                        Налаштування ШІ
+                    </button>
+                    <button onclick="showStatistics()" class="control-button bg-yellow-600 hover:bg-yellow-700">
+                        Статистика
+                    </button>
+                </div>
+            </div>
+
+            <!-- System Info -->
+            <div class="glass-effect p-4 rounded-xl">
+                <h2 class="text-lg font-bold mb-4">Системна інформація</h2>
+                <div class="space-y-2 text-sm text-gray-300">
+                    <div>Статус: <span id="botStatus" class="text-red-400">Неактивний</span></div>
+                    <div>Версія: <span id="currentVersion">1.0.0</span></div>
+                    <div>Останнє оновлення: <span id="lastUpdate">24.03.2024</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSettings() {
+            document.getElementById('settings').classList.remove('hidden');
+            document.getElementById('console').classList.add('hidden');
+        }
+
+        function showConsole() {
+            document.getElementById('settings').classList.add('hidden');
+            document.getElementById('console').classList.remove('hidden');
+        }
+
+        // Завантаження налаштувань при старті
+        window.onload = function() {
+            fetch('/load_settings')
+                .then(response => response.json())
+                .then(data => {
+                    document.querySelector('input[type="text"]').value = data.telegram_token;
+                    document.querySelector('select').value = data.ai_model;
+                    document.querySelectorAll('input[type="text"]')[1].value = data.ai_token;
+                });
+
+            // Додаємо перевірку статусу бота
+            fetch('/bot_status')
+                .then(response => response.json())
+                .then(data => {
+                    updateBotStatus(data.is_active);
+                    // Оновлюємо стан кнопок
+                    document.getElementById('startBot').disabled = data.is_active;
+                    document.getElementById('stopBot').disabled = !data.is_active;
+                    if (data.is_active) {
+                        connectWebSocket();
+                    }
+                });
+        }
+
+        // Збереження налаштувань
+        document.querySelector('.bg-blue-600').onclick = function() {
+            const data = {
+                telegram_token: document.querySelector('input[type="text"]').value,
+                ai_model: document.querySelector('select').value,
+                ai_token: document.querySelectorAll('input[type="text"]')[1].value
+            };
+
+            fetch('/save_settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Налаштування збережено!');
+            });
+        }
+
+        // Скидання налаштувань
+        document.querySelector('.bg-red-600').onclick = function() {
+            fetch('/reset_settings')
+                .then(response => response.json())
+                .then(data => {
+                    document.querySelector('input[type="text"]').value = '';
+                    document.querySelector('select').value = 'gemini';
+                    document.querySelectorAll('input[type="text"]')[1].value = '';
+                    alert('Налаштування скинуто!');
+                });
+        }
+
+        let socket = null;
+
+        function connectWebSocket() {
+            socket = new WebSocket('ws://localhost:5000/ws');
+            
+            socket.onopen = function() {
+                console.log("WebSocket з'єднання встановлено");
+                document.getElementById('consoleOutput').innerHTML += "WebSocket з'єднання встановлено\n";
+            };
+            
+            socket.onmessage = function(event) {
+                const consoleOutput = document.getElementById('consoleOutput');
+                consoleOutput.innerHTML += event.data + '\n';
+                consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            };
+            
+            socket.onerror = function(error) {
+                console.error("WebSocket помилка:", error);
+                document.getElementById('consoleOutput').innerHTML += "Помилка WebSocket з'єднання\n";
+            };
+            
+            socket.onclose = function() {
+                console.log("WebSocket з'єднання закрито");
+                document.getElementById('consoleOutput').innerHTML += "WebSocket з'єднання закрито\n";
+            };
+        }
+
+        function clearConsole() {
+            document.getElementById('consoleOutput').innerHTML = '';
+        }
+
+        // Оновлення статусу бота
+        function updateBotStatus(isActive) {
+            const statusElement = document.getElementById('botStatus');
+            if (isActive) {
+                statusElement.textContent = 'Активний';
+                statusElement.className = 'text-green-400';
+            } else {
+                statusElement.textContent = 'Неактивний';
+                statusElement.className = 'text-red-400';
+            }
+        }
+
+        // Оновіть обробник кнопки Start
+        document.getElementById('startBot').onclick = function() {
+            fetch('/start_bot')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        this.disabled = true;
+                        document.getElementById('stopBot').disabled = false;
+                        connectWebSocket();
+                        updateBotStatus(true);  // Оновлюємо статус
+                    }
+                });
+        };
+
+        // Оновіть обробник кнопки Stop
+        document.getElementById('stopBot').onclick = function() {
+            fetch('/stop_bot')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        this.disabled = true;
+                        document.getElementById('startBot').disabled = false;
+                        if (socket) {
+                            socket.close();
+                        }
+                        updateBotStatus(false);  // Оновлюємо статус
+                    }
+                });
+        };
+
+        function checkUpdates() {
+            fetch('/check_updates')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.has_updates) {
+                        const message = `Доступна нова версія ${data.latest_version}!\n\n` +
+                                      `Поточна версія: ${data.current_version}\n` +
+                                      `Дата релізу: ${data.release_date}\n\n` +
+                                      `Зміни в новій версії:\n${data.release_notes}\n\n` +
+                                      `Бажаєте оновити?`;
+                        
+                        if (confirm(message)) {
+                            // Тут можна додати логіку оновлення
+                            updateBot(data.latest_version);
+                        }
+                    } else {
+                        alert(`У вас встановлена найновіша версія (${data.current_version})!`);
+                    }
+                })
+                .catch(error => {
+                    alert('Помилка перевірки оновлень. Спробуйте пізніше.');
+                    console.error('Помилка:', error);
+                });
+        }
+
+        function updateBot(version) {
+            // Тут можна додати логіку оновлення
+            alert(`Початок оновлення до версії ${version}...\nЦя функція поки що в розробці.`);
+        }
+
+        function showAISettings() {
+            // Можна показати модальне вікно з налаштуваннями
+            fetch('/ai_settings')
+                .then(response => response.json())
+                .then(data => {
+                    // Показати модальне вікно з налаштуваннями
+                    alert('Налаштування ШІ:\n' + JSON.stringify(data, null, 2));
+                });
+        }
+
+        function showStatistics() {
+            fetch('/get_statistics')
+                .then(response => response.json())
+                .then(data => {
+                    // Показати статистику
+                    alert(
+                        `Статистика бота:\n` +
+                        `Всього повідомлень: ${data.total_messages}\n` +
+                        `Активних користувачів: ${data.active_users}\n` +
+                        `Час роботи: ${data.uptime}`
+                    );
+                });
+        }
+    </script>
+</body>
+</html>
